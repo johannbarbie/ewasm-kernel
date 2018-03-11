@@ -3,6 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const Address = require('../deps/address')
 const U256 = require('../deps/u256')
+const wast2wasm = require('wast2wasm')
 
 const Kernel = require('../index.js')
 const Environment = require('../testEnvironment.js')
@@ -18,8 +19,6 @@ if (argv.files) {
   tests = tests.filter((e) => { return argv.files.split(',').includes(e) })
 }
 
-// tests = ['callDataSize.wast']
-
 if (tests.length > 0) {
   runTests(tests)
 }
@@ -29,7 +28,7 @@ function runTests (tests) {
     testName = testName.split('.')[0]
     tape(testName, async (t) => {
       // Compile Command
-      const code = fs.readFileSync(`${dir}/${testName}.wasm`)
+      const code = (await wast2wasm(fs.readFileSync(`${dir}/${testName}.wast`), false)).buffer;
       const envData = JSON.parse(fs.readFileSync(`${dir}/${testName}.json`).toString())
 
       envData.caller = new Address(envData.caller)
@@ -50,7 +49,7 @@ function runTests (tests) {
       try {
         await kernel.run(env)
       } catch (e) {
-        t.fail('Exception: ' + e)
+        t.fail('Exception(' + testName + '): ' + e)
         console.error('FAIL')
         console.error(e)
       } finally {

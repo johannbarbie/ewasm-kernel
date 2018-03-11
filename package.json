@@ -43,6 +43,7 @@
     "ethereumjs-util": "^5.0.0",
     "loglevel": "1.5.1",
     "merkle-trie": "0.0.0",
-    "minimist": "^1.2.0"
+    "minimist": "^1.2.0",
+    "wast2wasm": "0.0.1"
   }
 }
